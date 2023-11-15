@@ -20,6 +20,9 @@ setup(
     entry_points={
         'console_scripts': [
              'axis = nodes.axis:main',
+             'axis_ptz = nodes.axis_ptz:main',
+             'axis_teleop = nodes.teleop:main',
+             'publish_axis_tf = nodes.publish_axis_tf:main'
         ],
     },
 )

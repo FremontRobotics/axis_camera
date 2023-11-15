@@ -167,7 +167,7 @@ class Axis(Node):
         super().__init__('axis')
     
         self.get_logger().info(f"Starting node")
-        self.declare_parameter('hostname', '192.168.0.228:8000') # default IP address
+        self.declare_parameter('hostname', '192.168.0.228:8001') # default IP address
         self.declare_parameter('username', '')         # default login name
         self.declare_parameter('password', '')
         self.declare_parameter('width', 640)
@@ -400,7 +400,13 @@ def main():
 
     axis = Axis()
 
-    rclpy.spin(axis)
+    try:
+        rclpy.spin(axis)
+    except KeyboardInterrupt:
+        pass
+
+    rclpy.shutdown()
+
 
 if __name__ == "__main__":
     main()
