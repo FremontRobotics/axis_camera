@@ -28,16 +28,16 @@
     <param name="defog" value="$(arg enable_defog)" />
     <param name="ir" value="$(arg enable_ir)" />
 
-    <node pkg="axis_camera" type="axis.py" name="axis" />
-    <node pkg="axis_camera" type="axis_ptz.py" name="axis_ptz" if="$(arg enable_ptz)" />
+    <node pkg="axis_camera" exec="axis.py" name="axis" />
+    <node pkg="axis_camera" exec="axis_ptz.py" name="axis_ptz" if="$(arg enable_ptz)" />
 
-    <node pkg="image_transport" type="republish" name="republish"
+    <node pkg="image_transport" exec="republish" name="republish"
           args="compressed" if="$(arg enable_theora)">
       <remap from="in" to="image_raw" />
       <remap from="out" to="image_raw_out" />
     </node>
 
-    <node pkg="axis_camera" type="teleop.py" name="teleop" if="$(arg enable_ptz_teleop)">
+    <node pkg="axis_camera" exec="teleop.py" name="teleop" if="$(arg enable_ptz_teleop)">
       <param name="enable_button" value="1" />
       <param name="scale_pan_deg" value="25" />
       <param name="scale_tilt_deg" value="25" />
