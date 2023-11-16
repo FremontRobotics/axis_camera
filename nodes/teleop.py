@@ -52,6 +52,7 @@ class Teleop(Node):
             if self.state.tilt < 0.0: self.state.tilt = 0.0
 
             self.pub.publish(self.state)
+            self.joy = None
 
     def joy_callback(self, data):
         self.joy = data
