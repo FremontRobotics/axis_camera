@@ -1,5 +1,7 @@
 from setuptools import find_packages, setup
-
+import os 
+from glob import glob
+ 
 package_name = 'axis_camera'
 
 setup(
@@ -10,6 +12,7 @@ setup(
         ('share/' + package_name, ['package.xml']),
         ('share/ament_index/resource_index/packages',
             ['resource/' + package_name]),
+        (os.path.join('share', package_name, 'launch'), glob('launch/*.launch')),
     ],
     install_requires=['setuptools'],
     zip_safe=True,
