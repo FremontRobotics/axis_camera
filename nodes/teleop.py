@@ -11,14 +11,14 @@ class Teleop(Node):
     def __init__(self):
         super().__init__('axis_teleop')
 
-        self.use_enable_button = self.declare_parameter('~use_enable_button', False).get_parameter_value().bool_value
-        self.enable_button = self.declare_parameter('~enable_button', 4).get_parameter_value().integer_value
-        self.zoomout_button = self.declare_parameter('~zoomout_button', 2).get_parameter_value().integer_value
-        self.zoomin_button = self.declare_parameter('~zoomin_button', 3).get_parameter_value().integer_value
-        self.home_button = self.declare_parameter('~home_button', 10).get_parameter_value().integer_value
+        self.use_enable_button = self.declare_parameter('use_enable_button', True).get_parameter_value().bool_value
+        self.enable_button = self.declare_parameter('enable_button', 1).get_parameter_value().integer_value
+        self.zoomout_button = self.declare_parameter('zoomout_button', 2).get_parameter_value().integer_value
+        self.zoomin_button = self.declare_parameter('zoomin_button', 3).get_parameter_value().integer_value
+        self.home_button = self.declare_parameter('home_button', 10).get_parameter_value().integer_value
         
-        self.axis_pan = self.declare_parameter('~axis_pan', 3).get_parameter_value().integer_value
-        self.axis_tilt = self.declare_parameter('~axis_tilt', 4).get_parameter_value().integer_value
+        self.axis_pan = self.declare_parameter('axis_pan', 3).get_parameter_value().integer_value
+        self.axis_tilt = self.declare_parameter('axis_tilt', 4).get_parameter_value().integer_value
         
       
         self.default_pan=2.68
