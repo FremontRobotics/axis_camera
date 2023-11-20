@@ -174,6 +174,7 @@ class Axis(Node):
         self.declare_parameter('hostname', '192.168.0.228:8001') # default IP address
         self.declare_parameter('username', '')         # default login name
         self.declare_parameter('password', '')
+
         self.declare_parameter('width', 640)
         self.declare_parameter('height', 480)
         self.declare_parameter('fps', 0)                   # frames per second (0 = camera default)
@@ -218,8 +219,8 @@ class Axis(Node):
         #self.cinfo.loadCameraInfo()         # required before getCameraInfo()
         self.st = None
 
-        self.pub = self.create_publisher(CompressedImage, "image_raw/compressed", 10)
-        self.caminfo_pub = self.create_publisher(CameraInfo, "image_raw/camera_info", 10)
+        self.pub = self.create_publisher(CompressedImage, f"{self.frame_id}/image_raw/compressed", 10)
+        self.caminfo_pub = self.create_publisher(CameraInfo, f"{self.frame_id}/image_raw/camera_info", 10)
 
         if self.st is None:
             self.st = StreamThread(self)

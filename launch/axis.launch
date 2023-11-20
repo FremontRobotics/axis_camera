@@ -1,6 +1,8 @@
 <launch>
-  <arg name="camera_name" default="axis_camera" />
-  <arg name="hostname" default="192.168.0.228:8001" />
+  <arg name="camera0_name" default="axis_fixed" />
+  <arg name="camera1_name" default="axis_ptz" />
+  <arg name="hostname0" default="192.168.0.228:8000" />
+  <arg name="hostname1" default="192.168.0.228:8001" />
   <arg name="username" default="" />
   <arg name="password" default="" />
   <arg name="encrypt_password" default="false" />
@@ -15,33 +17,44 @@
   <arg name="height" default="480" />
   <arg name="camera" default="0" />
 
-  <group>
-    <push_ros_namespace namespace="$(var camera_name)"/>
-  </group>
 
-    <node pkg="axis_camera" exec="axis" name="axis">
-      <param name="hostname" value="$(var hostname)" />
+  <node pkg="axis_camera" exec="axis" name="axis_fixed">
+      <param name="hostname" value="$(var hostname0)" />
       <param name="username" value="$(var username)" />
       <param name="password" value="$(var password)" />
       <param name="use_encrypted_password" value="$(var encrypt_password)" />
       <param name="width" value="$(var width)" />
       <param name="height" value="$(var height)" />
       <param name="camera" value="$(var camera)" />
-      <param name="frame_id" value="$(var camera_name)" />
+      <param name="frame_id" value="$(var camera0_name)" />
+      <param name="wiper" value="$(var enable_wiper)" />
+      <param name="defog" value="$(var enable_defog)" />
+      <param name="ir" value="$(var enable_ir)" />
+    </node>
+
+    <node pkg="axis_camera" exec="axis" name="axis_ptz">
+      <param name="hostname" value="$(var hostname1)" />
+      <param name="username" value="$(var username)" />
+      <param name="password" value="$(var password)" />
+      <param name="use_encrypted_password" value="$(var encrypt_password)" />
+      <param name="width" value="$(var width)" />
+      <param name="height" value="$(var height)" />
+      <param name="camera" value="$(var camera)" />
+      <param name="frame_id" value="$(var camera1_name)" />
       <param name="wiper" value="$(var enable_wiper)" />
       <param name="defog" value="$(var enable_defog)" />
       <param name="ir" value="$(var enable_ir)" />
     </node>
 
     <node pkg="axis_camera" exec="axis_ptz" name="axis_ptz" if="$(var enable_ptz)">
-      <param name="hostname" value="$(var hostname)" />
+      <param name="hostname" value="$(var hostname1)" />
       <param name="username" value="$(var username)" />
       <param name="password" value="$(var password)" />
       <param name="use_encrypted_password" value="$(var encrypt_password)" />
       <param name="width" value="$(var width)" />
       <param name="height" value="$(var height)" />
       <param name="camera" value="$(var camera)" />
-      <param name="frame_id" value="$(var camera_name)" />
+      <param name="frame_id" value="$(var camera1_name)" />
       <param name="wiper" value="$(var enable_wiper)" />
       <param name="defog" value="$(var enable_defog)" />
       <param name="ir" value="$(var enable_ir)" />
