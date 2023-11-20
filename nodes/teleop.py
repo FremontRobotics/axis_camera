@@ -35,9 +35,9 @@ class Teleop(Node):
     def timer_callback(self):
         self.state.brightness = 5000
 
-        if self.joy != None and ((not self.use_enable_button) or (self.joy.buttons[self.enable_button] == 1)):
-            #and (rospy.Time.now() - self.joy.header.stamp).to_sec() < 0.2:
-            
+        if self.joy != None and \
+            ((not self.use_enable_button) or (self.joy.buttons[self.enable_button] == 1)):
+
             if self.joy.buttons[self.home_button] == 1:
                 self.state.pan = self.default_pan
                 self.state.tilt = self.default_tilt
@@ -50,7 +50,6 @@ class Teleop(Node):
 
             if self.state.tilt > 85.0: self.state.tilt = 85.0
             if self.state.tilt < 0.0: self.state.tilt = 0.0
-
             self.pub.publish(self.state)
             self.joy = None
 
