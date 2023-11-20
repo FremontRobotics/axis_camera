@@ -20,6 +20,7 @@ class Teleop(Node):
         self.axis_pan = self.declare_parameter('~axis_pan', 3).get_parameter_value().integer_value
         self.axis_tilt = self.declare_parameter('~axis_tilt', 4).get_parameter_value().integer_value
         
+      
         self.default_pan=2.68
         self.default_tilt=0.0
         self.default_zoom=1.0
@@ -27,7 +28,7 @@ class Teleop(Node):
         self.joy = None
 
         self.pub = self.create_publisher(Axis, "cmd", 1)
-        self.sub = self.create_subscription(Joy, "j100_0803/joy_teleop/joy", self.joy_callback, 1)
+        self.sub = self.create_subscription(Joy, "/j100_0806/joy_teleop/joy", self.joy_callback, 1)
 
         timer_period = 0.5  # seconds
         self.timer = self.create_timer(timer_period, self.timer_callback)
@@ -67,8 +68,6 @@ def main():
         rclpy.spin(node)
     except KeyboardInterrupt:
         pass
-
-    rclpy.shutdown()
 
 if __name__ == "__main__":
     main()

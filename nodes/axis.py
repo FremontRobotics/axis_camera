@@ -219,8 +219,8 @@ class Axis(Node):
         #self.cinfo.loadCameraInfo()         # required before getCameraInfo()
         self.st = None
 
-        self.pub = self.create_publisher(CompressedImage, f"{self.frame_id}/image_raw/compressed", 10)
-        self.caminfo_pub = self.create_publisher(CameraInfo, f"{self.frame_id}/image_raw/camera_info", 10)
+        self.pub = self.create_publisher(CompressedImage, f"image_raw/compressed", 10)
+        self.caminfo_pub = self.create_publisher(CameraInfo, f"camera_info", 10)
 
         if self.st is None:
             self.st = StreamThread(self)
@@ -409,8 +409,6 @@ def main():
         rclpy.spin(axis)
     except KeyboardInterrupt:
         pass
-
-    rclpy.shutdown()
 
 
 if __name__ == "__main__":

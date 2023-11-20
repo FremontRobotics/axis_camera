@@ -15,7 +15,6 @@ from axis_camera_interfaces.msg import Axis
 from std_msgs.msg import Bool
 
 
-
 class StateThread(threading.Thread):
     '''This class handles the publication of the positional state of the camera
     to a ROS message'''
@@ -339,7 +338,6 @@ def main():
     except KeyboardInterrupt:
         pass
 
-    rclpy.shutdown()
 
 if __name__ == "__main__":
     main()

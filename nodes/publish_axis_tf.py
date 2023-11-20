@@ -9,7 +9,7 @@ import numpy as np
 from geometry_msgs.msg import TransformStamped
 from tf2_ros import TransformBroadcaster
 
-from axis_camera.nodes.axis.msg import Axis
+from axis_camera_interfaces.msg import Axis
 
 base_name = "/kingfisher"
 base_frame = "/kingfisher/base"
@@ -41,21 +41,20 @@ def quaternion_from_euler(ai, aj, ak):
 class PublishAxisTF(Node):
     def __init__(self):
         super().__init__('publish_axis_tf')
-        self.namespace = self.declare_parameter('namespace', 'j100_0803').get_parameter_value().string_value
-
+       
         self.tf_broadcaster = TransformBroadcaster(self)
 
         self.subscription = self.create_subscription(
             Axis,
-            f'/axis/state',
-            self.axis_db,
+            f'state',
+            self.axis_cb,
             1)
         
-    def axis_cb(data):
-        t = TransformStamped
+    def axis_cb(self, data):
+        t = TransformStamped()
         t.header.stamp = self.get_clock().now().to_msg()
         t.header.frame_id = "map"
-        t.child_frame_id = self.namespace + "/pan"
+        t.child_frame_id = self.get_namespace() + "/pan"
 
 
         pan = math.pi + data.pan * math.pi / 180.
@@ -71,8 +70,8 @@ class PublishAxisTF(Node):
 
         self.tf_broadcaster.sendTransform(t)
 
-        t.header.frame_id = self.namespace + "/pan"
-        t.child_frame_id = self.namespace + "/tilt"
+        t.header.frame_id = self.get_namespace() + "/pan"
+        t.child_frame_id = self.get_namespace() + "/tilt"
 
         q = quaternion_from_euler(0,tilt,0)
         t.transform.rotation.x = q[0]
@@ -90,5 +89,3 @@ def main():
         rclpy.spin(node)
     except KeyboardInterrupt:
         pass
-
-    rclpy.shutdown()

@@ -18,7 +18,7 @@
   <arg name="camera" default="0" />
 
 
-  <node pkg="axis_camera" exec="axis" name="axis_fixed">
+  <node pkg="axis_camera" exec="axis" name="axis_fixed" namespace="j100_0803/$(var camera0_name)">
       <param name="hostname" value="$(var hostname0)" />
       <param name="username" value="$(var username)" />
       <param name="password" value="$(var password)" />
@@ -32,7 +32,7 @@
       <param name="ir" value="$(var enable_ir)" />
     </node>
 
-    <node pkg="axis_camera" exec="axis" name="axis_ptz">
+    <node pkg="axis_camera" exec="axis" name="axis_ptz" namespace="j100_0803/$(var camera1_name)">
       <param name="hostname" value="$(var hostname1)" />
       <param name="username" value="$(var username)" />
       <param name="password" value="$(var password)" />
@@ -46,7 +46,7 @@
       <param name="ir" value="$(var enable_ir)" />
     </node>
 
-    <node pkg="axis_camera" exec="axis_ptz" name="axis_ptz" if="$(var enable_ptz)">
+    <node pkg="axis_camera" exec="axis_ptz" name="axis_ptz" if="$(var enable_ptz)" namespace="j100_0803/$(var camera1_name)">
       <param name="hostname" value="$(var hostname1)" />
       <param name="username" value="$(var username)" />
       <param name="password" value="$(var password)" />
@@ -60,15 +60,18 @@
       <param name="ir" value="$(var enable_ir)" />
     </node>
 
+
+    <node pkg="axis_camera" exec="publish_axis_tf" name="publish_axis_tf" namespace="j100_0803/$(var camera1_name)">
+    </node>
 <!--
     <node pkg="image_transport" exec="republish" name="republish"
           args="compressed" if="$(var enable_theora)">
       <remap from="in" to="image_raw" />
-      <remap from="out" to="image_raw_out" />
+      <remap from="out" to="image_raw_out" /> 
     </node>
 -->
 
-    <node pkg="axis_camera" exec="axis_teleop" name="axis_teleop" if="$(var enable_ptz_teleop)">
+    <node pkg="axis_camera" exec="axis_teleop" name="axis_teleop" if="$(var enable_ptz_teleop)" namespace="j100_0803/$(var camera1_name)">
       <param name="use_enable_button" value="false" />
       <param name="enable_button" value="4" />
       <param name="scale_pan_deg" value="25" />
