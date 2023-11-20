@@ -34,8 +34,11 @@ class StreamThread(threading.Thread):
     def stream(self):
         while(True):
             self.formURL()
+            self.axis.get_logger().warn("formed url")
             self.authenticate()
+            self.axis.get_logger().warn("authenticated")
             if self.openURL():
+                self.axis.get_logger().warn("start publishing frames")
                 self.publishFramesContinuously()
             time.sleep(2) # if stream stays intact we shouldn't get to this
 
@@ -75,10 +78,11 @@ class StreamThread(threading.Thread):
     def openURL(self):
         '''Open connection to Axis camera using http'''
         try:
+            self.axis.get_logger().warn(f'Opening URL: {self.url}')
             self.fp = urllib.request.urlopen(self.url, timeout=self.timeoutSeconds)
             return(True)
         except urllib.error.URLError as e:
-            print('Error opening URL %s' % (self.url) +
+            self.axis.get_logger().error('Error opening URL %s' % (self.url) +
                             'Possible timeout.  Looping until camera appears')
             return(False)
 
@@ -132,7 +136,7 @@ class StreamThread(threading.Thread):
             self.fp.readline() # Read terminating \r\n and do nothing with it
 
     def publishMsg(self):
-        '''Publish jpeg image as a ROS message'''
+        print('''Publish jpeg image as a ROS message''')
         self.msg = CompressedImage()
         self.msg.header.stamp = self.axis.get_clock().now().to_msg()
         self.msg.header.frame_id = self.axis.frame_id   
