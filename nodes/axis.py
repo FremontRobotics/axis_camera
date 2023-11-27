@@ -136,7 +136,7 @@ class StreamThread(threading.Thread):
             self.fp.readline() # Read terminating \r\n and do nothing with it
 
     def publishMsg(self):
-        print('''Publish jpeg image as a ROS message''')
+        '''Publish jpeg image as a ROS message'''
         self.msg = CompressedImage()
         self.msg.header.stamp = self.axis.get_clock().now().to_msg()
         self.msg.header.frame_id = self.axis.frame_id   
@@ -187,9 +187,9 @@ class Axis(Node):
         self.declare_parameter('wiper', False)
     
         
-        self.hostname = self.get_parameter('hostname').value
-        self.username = self.get_parameter('username').value
-        self.password = self.get_parameter('password').value
+        self.hostname = self.get_parameter( 'hostname').get_parameter_value().string_value
+        self.username = self.get_parameter('username').get_parameter_value().string_value
+        self.password = self.get_parameter('password').get_parameter_value().string_value
         self.width = self.get_parameter('width').value
         self.height = self.get_parameter('height').value
         self.fps = self.get_parameter('fps').value
