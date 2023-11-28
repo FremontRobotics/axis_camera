@@ -28,7 +28,7 @@ class Teleop(Node):
         self.joy = None
 
         self.pub = self.create_publisher(Axis, "cmd", 1)
-        self.sub = self.create_subscription(Joy, "/j100_0806/joy_teleop/joy", self.joy_callback, 1)
+        self.sub = self.create_subscription(Joy, "/j100_0803/joy_teleop/joy", self.joy_callback, 1)
 
         timer_period = 0.5  # seconds
         self.timer = self.create_timer(timer_period, self.timer_callback)
