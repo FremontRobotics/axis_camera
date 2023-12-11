@@ -47,8 +47,8 @@ class Teleop(Node):
         if self.joy.buttons[0]==1:
             self.msg.autofocus = True
         else:
-            self.msg.focus = self.axes_thresholded[5] * self.sensitivities[5]
-            if (abs(self.msg.focus)>0.00001):
+            self.msg.focus = int(self.axes_thresholded[5] * self.sensitivities[5])
+            if (self.msg.focus > 0):
                 # Only turn autofocus off if msg.focus!=0
                 self.msg.autofocus = False
         self.pub.publish(self.msg)
