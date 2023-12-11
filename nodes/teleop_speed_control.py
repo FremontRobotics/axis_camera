@@ -25,7 +25,9 @@ class Teleop(Node):
         self.joy = None
         self.msg = Axis() # instantiate Axis message
         self.msg.autofocus = True # autofocus is on by default
-        # sensitivities[0..5] corresponding to fwd, left, up, tilt right, 
+        self.msg.autoiris = True
+        self.msg.brightness = 5000
+# sensitivities[0..5] corresponding to fwd, left, up, tilt right, 
         # tilt forwards, anticlockwise twist
         self.mirror = False
         self.mirror_already_actioned = False # to stop mirror flip-flopping
@@ -33,7 +35,7 @@ class Teleop(Node):
         self.deadband = [0.2, 0.2, 0.2, 0.2, 0.4, 0.4]
        
     def timer_callback(self):
-        if False:  #self.joy != None:
+        if self.joy != None:
             self.createCmdMessage()
             #self.createMirrorMessage()
 
@@ -42,16 +44,16 @@ class Teleop(Node):
         '''Creates and publishes message to command the camera.  Spacenav axes
         are: [fwd, left, up, tilt_right, tilt_forward, twist_anticlockwise'''
         self.applyThresholds()
-        self.msg.pan = self.axes_thresholded[1] * self.sensitivities[1]
-        self.msg.tilt = self.axes_thresholded[2] * self.sensitivities[2]
-        self.msg.zoom = self.axes_thresholded[0] * self.sensitivities[0]
+        self.msg.pan = self.axes_thresholded[3] * self.sensitivities[1]
+        self.msg.tilt = self.axes_thresholded[4] * self.sensitivities[2]
+        self.msg.zoom = self.axes_thresholded[1] * self.sensitivities[0]
         #if self.joy.buttons[0]==1:
         #    self.msg.autofocus = True
         #else:
         self.msg.focus = int(self.axes_thresholded[5] * self.sensitivities[5])
         if (self.msg.focus > 0):
-                # Only turn autofocus off if msg.focus!=0
-                self.msg.autofocus = False
+            pass        # Only turn autofocus off if msg.focus!=0
+                #self.msg.autofocus = False
         self.pub.publish(self.msg)
 
     def applyThresholds(self):
@@ -64,7 +66,6 @@ class Teleop(Node):
         print(f"axes: {self.axes_thresholded}")
         
     def joy_callback(self, data):
-        self.get_logger().info(f"got joy! {data}")
         self.joy = data
 
     def createMirrorMessage(self):
