@@ -8,8 +8,9 @@ from std_msgs.msg import Bool
 
 class Teleop(Node):
     def __init__(self):
-        super().__init__('axis_ptz_speed_controller')
+        super().__init__('axis_teleop_speed_control')
         self.get_logger().info(f"Starting node")
+
         self.initialiseVariables()
         
         self.pub = self.create_publisher(Axis, "cmd", 1)
@@ -63,7 +64,7 @@ class Teleop(Node):
         print(f"axes: {self.axes_thresholded}")
         
     def joy_callback(self, data):
-        print(f"got joy! {data}")
+        self.get_logger().info(f"got joy! {data}")
         self.joy = data
 
     def createMirrorMessage(self):
