@@ -9,7 +9,7 @@ from std_msgs.msg import Bool
 class Teleop(Node):
     def __init__(self):
         super().__init__('axis_ptz_speed_controller')
-        
+        self.get_logger().info(f"Starting node")
         self.initialiseVariables()
         
         self.pub = self.create_publisher(Axis, "cmd", 1)
@@ -18,7 +18,7 @@ class Teleop(Node):
         timer_period = 0.2 # 5hz
         self.timer = self.create_timer(timer_period, self.timer_callback)
 
-        #self.pub_mirror = rospy.Publisher('mirror', Bool, queue_size=1)
+#        self.pub_mirror = self.create_publisher(Bool, "mirror", 1)
         
     def initialiseVariables(self):
         self.joy = None
@@ -32,9 +32,9 @@ class Teleop(Node):
         self.deadband = [0.2, 0.2, 0.2, 0.2, 0.4, 0.4]
        
     def timer_callback(self):
-        if self.joy != None:
+        if False:  #self.joy != None:
             self.createCmdMessage()
-            self.createMirrorMessage()
+            #self.createMirrorMessage()
 
 
     def createCmdMessage(self):
@@ -44,11 +44,11 @@ class Teleop(Node):
         self.msg.pan = self.axes_thresholded[1] * self.sensitivities[1]
         self.msg.tilt = self.axes_thresholded[2] * self.sensitivities[2]
         self.msg.zoom = self.axes_thresholded[0] * self.sensitivities[0]
-        if self.joy.buttons[0]==1:
-            self.msg.autofocus = True
-        else:
-            self.msg.focus = int(self.axes_thresholded[5] * self.sensitivities[5])
-            if (self.msg.focus > 0):
+        #if self.joy.buttons[0]==1:
+        #    self.msg.autofocus = True
+        #else:
+        self.msg.focus = int(self.axes_thresholded[5] * self.sensitivities[5])
+        if (self.msg.focus > 0):
                 # Only turn autofocus off if msg.focus!=0
                 self.msg.autofocus = False
         self.pub.publish(self.msg)
@@ -60,19 +60,21 @@ class Teleop(Node):
         for i in range(n):
             if (abs(self.joy.axes[i])>self.deadband[i]):
                 self.axes_thresholded[i] = self.joy.axes[i]
-                
+        print(f"axes: {self.axes_thresholded}")
+        
     def joy_callback(self, data):
+        print(f"got joy! {data}")
         self.joy = data
 
     def createMirrorMessage(self):
         '''Creates and publishes message to indicate image should be mirrored'''
-        if self.joy.buttons[1]==1:
+        if self.joy.buttons[2]==1:
             if not self.mirror_already_actioned:
                 self.mirror = not self.mirror
                 self.mirror_already_actioned = True
         else:
             self.mirror_already_actioned = False
-        self.pub_mirror.publish(Bool(self.mirror))
+        self.pub_mirror.publish(self.mirror)
 
 
 def main():

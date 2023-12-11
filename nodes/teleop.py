@@ -55,6 +55,7 @@ class Teleop(Node):
             self.joy = None
 
     def joy_callback(self, data):
+        self.get_logger().info("got joy!")
         self.joy = data
 
 

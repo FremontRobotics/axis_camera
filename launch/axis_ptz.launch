@@ -18,7 +18,7 @@
   <arg name="camera" default="0" />
 
 
-  <node pkg="axis_camera" exec="axis" name="axis_fixed" namespace="j100_0803/$(var camera0_name)">
+<!--  <node pkg="axis_camera" exec="axis" name="axis_fixed" namespace="j100_0803/$(var camera0_name)">
       <param name="hostname" value="$(var hostname0)" />
       <param name="username" value="$(var username)" />
       <param name="password" value="$(var password)" />
@@ -45,7 +45,7 @@
       <param name="defog" value="$(var enable_defog)" />
       <param name="ir" value="$(var enable_ir)" />
     </node>
-
+-->
     <node pkg="axis_camera" exec="axis_ptz" name="axis_ptz" if="$(var enable_ptz)" namespace="j100_0803/$(var camera1_name)">
       <param name="hostname" value="$(var hostname1)" />
       <param name="username" value="$(var username)" />
@@ -71,7 +71,7 @@
     </node>
 -->
 
-    <node pkg="axis_camera" exec="axis_teleop_speed_control" name="axis_teleop_speed_control" if="$(var enable_ptz_teleop)" namespace="j100_0803/$(var camera1_name)">
+    <node pkg="axis_camera" exec="axis_teleop" name="axis_teleop" if="$(var enable_ptz_teleop)" namespace="j100_0803/$(var camera1_name)">
       <param name="use_enable_button" value="true" />
       <param name="enable_button" value="1" />
       <param name="scale_pan_deg" value="25" />
