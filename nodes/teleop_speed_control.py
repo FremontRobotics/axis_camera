@@ -1,17 +1,24 @@
 #!/usr/bin/env python3
 
-import rospy
+import rclpy
+from rclpy.node import Node
 from sensor_msgs.msg import Joy
-from axis_camera.msg import Axis
+from axis_camera_interfaces.msg import Axis
 from std_msgs.msg import Bool
 
-class Teleop:
+class Teleop(Node):
     def __init__(self):
-        rospy.init_node('axis_ptz_speed_controller')
+        super().__init__('axis_ptz_speed_controller')
+        
         self.initialiseVariables()
-        self.pub = rospy.Publisher('cmd', Axis, queue_size=1)
-        rospy.Subscriber("joy", Joy, self.joy_callback, queue_size=1)
-        self.pub_mirror = rospy.Publisher('mirror', Bool, queue_size=1)
+        
+        self.pub = self.create_publisher(Axis, "cmd", 1)
+        self.sub = self.create_subscription(Joy, "/j100_0803/joy_teleop/joy", self.joy_callback, 1)
+
+        timer_period = 0.2 # 5hz
+        self.timer = self.create_timer(timer_period, self.timer_callback)
+
+        #self.pub_mirror = rospy.Publisher('mirror', Bool, queue_size=1)
         
     def initialiseVariables(self):
         self.joy = None
@@ -24,14 +31,11 @@ class Teleop:
         self.sensitivities = [120, -60, 40, 0, 0, 30]
         self.deadband = [0.2, 0.2, 0.2, 0.2, 0.4, 0.4]
        
-    def spin(self):
-        self.pub.publish(self.msg)
-        r = rospy.Rate(5)
-        while not rospy.is_shutdown():
-            if self.joy != None:
-                self.createCmdMessage()
-                self.createMirrorMessage()
-            r.sleep()
+    def timer_callback(self):
+        if self.joy != None:
+            self.createCmdMessage()
+            self.createMirrorMessage()
+
 
     def createCmdMessage(self):
         '''Creates and publishes message to command the camera.  Spacenav axes
@@ -69,7 +73,17 @@ class Teleop:
         else:
             self.mirror_already_actioned = False
         self.pub_mirror.publish(Bool(self.mirror))
-    
+
+
+def main():
+    rclpy.init()
+
+    node = Teleop()
+
+    try:
+        rclpy.spin(node)
+    except KeyboardInterrupt:
+        pass
+
 if __name__ == "__main__":
-    teleop = Teleop()
-    teleop.spin()
+    main()

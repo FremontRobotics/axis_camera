@@ -25,6 +25,7 @@ setup(
              'axis = nodes.axis:main',
              'axis_ptz = nodes.axis_ptz:main',
              'axis_teleop = nodes.teleop:main',
+             'axis_teleop_speed_control = nodes.teleop_speed_control:main',
              'publish_axis_tf = nodes.publish_axis_tf:main'
         ],
     },
