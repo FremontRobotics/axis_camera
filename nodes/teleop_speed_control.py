@@ -31,7 +31,7 @@ class Teleop(Node):
         # tilt forwards, anticlockwise twist
         self.mirror = False
         self.mirror_already_actioned = False # to stop mirror flip-flopping
-        self.sensitivities = [120, -60, 40, 0, 0, 30]
+        self.sensitivities = [9999, -60, 40, 0, 0, 30]
         self.deadband = [0.2, 0.2, 0.2, 0.2, 0.4, 0.4]
        
     def timer_callback(self):
