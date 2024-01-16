@@ -236,7 +236,7 @@ class AxisPTZ(Node):
         cannot be adjusted on the Axis 214PTZ'''
         if self.get_parameter('speed_control').get_parameter_value().bool_value:
             if abs(self.msg.brightness) > 100:
-                self.msg.brightness = math.copysign(100.0, self.msg.brightness)
+                self.msg.brightness = int(math.copysign(100, self.msg.brightness))
         else: # position control:
             if self.msg.brightness>9999:
                 self.msg.brightness = 9999
@@ -252,11 +252,12 @@ class AxisPTZ(Node):
         '''Apply set-points to camera via HTTP'''
 
         self.createCmdString()
+        #self.get_logger().info(f"Sending cmdString: {self.cmdString}")
         try:
             url = f"http://{self.hostname}/{self.cmdString}"
             resp = requests.get(url, auth=self.http_auth, timeout=self.http_timeout, headers=self.http_headers)
 
-            if resp.status_code != requests.status_codes.codes.ok:
+            if resp.ok:
                 pass
             else:
                 raise Exception(f"HTTP error {resp.status_code}")
@@ -274,7 +275,7 @@ class AxisPTZ(Node):
                     + 'continuousbrightnessmove=%d&' % \
                                                     (int(self.msg.brightness))
             # Note that brightness adjustment has no effect for Axis 214PTZ.
-            if self.msg.autofocus:
+            if True: #self.msg.autofocus:
                 self.cmdString += 'autofocus=on&'
             else:
                 self.cmdString += 'autofocus=off&continuousfocusmove=%d&' % \

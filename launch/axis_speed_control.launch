@@ -58,6 +58,7 @@
       <param name="wiper" value="$(var enable_wiper)" />
       <param name="defog" value="$(var enable_defog)" />
       <param name="ir" value="$(var enable_ir)" />
+      <param name="speed_control" value="true" />
     </node>
 
 
@@ -71,7 +72,7 @@
     </node>
 -->
 
-    <node pkg="axis_camera" exec="axis_teleop_speed_control" name="axis_teleop_speed_control" if="$(var enable_ptz_teleop)" namespace="j100_0803/$(var camera1_name)">
+    <node pkg="axis_camera" exec="axis_teleop" name="axis_teleop" if="$(var enable_ptz_teleop)" namespace="j100_0803/$(var camera1_name)">
       <param name="use_enable_button" value="true" />
       <param name="enable_button" value="1" />
       <param name="scale_pan_deg" value="25" />

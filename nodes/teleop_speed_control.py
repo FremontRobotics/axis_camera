@@ -31,7 +31,7 @@ class Teleop(Node):
         # tilt forwards, anticlockwise twist
         self.mirror = False
         self.mirror_already_actioned = False # to stop mirror flip-flopping
-        self.sensitivities = [120, -60, 40, 0, 0, 30]
+        self.sensitivities = [9999, -180, 90, 0, 0, 30]
         self.deadband = [0.2, 0.2, 0.2, 0.2, 0.4, 0.4]
        
     def timer_callback(self):
@@ -47,12 +47,10 @@ class Teleop(Node):
         self.msg.pan = self.axes_thresholded[3] * self.sensitivities[1]
         self.msg.tilt = self.axes_thresholded[4] * self.sensitivities[2]
         self.msg.zoom = self.axes_thresholded[1] * self.sensitivities[0]
-        #if self.joy.buttons[0]==1:
-        #    self.msg.autofocus = True
-        #else:
-        self.msg.focus = int(self.axes_thresholded[5] * self.sensitivities[5])
-        if (self.msg.focus > 0):
-            pass        # Only turn autofocus off if msg.focus!=0
+        self.msg.autofocus = True
+        #self.msg.focus = int(self.axes_thresholded[5] * self.sensitivities[5])
+        #if (self.msg.focus > 0):
+        #    pass        # Only turn autofocus off if msg.focus!=0
                 #self.msg.autofocus = False
         self.pub.publish(self.msg)
 

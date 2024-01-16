@@ -35,27 +35,36 @@ class Teleop(Node):
 
     def timer_callback(self):
         self.state.brightness = 5000
+        if self.joy != None:
+            if self.joy.buttons[self.enable_button] == 1:
 
-        if self.joy != None and \
-            ((not self.use_enable_button) or (self.joy.buttons[self.enable_button] == 1)):
 
-            if self.joy.buttons[self.home_button] == 1:
-                self.state.pan = self.default_pan
-                self.state.tilt = self.default_tilt
-                self.state.zoom = self.default_zoom
-            else:
-                self.state.pan += self.joy.axes[self.axis_pan]*5.0
-                self.state.tilt += self.joy.axes[self.axis_tilt]*5.0
-                self.state.zoom += self.joy.buttons[self.zoomin_button]*20.0
-                self.state.zoom -= self.joy.buttons[self.zoomout_button]*20.0
+                if False: # not speed_control
+                    if self.state.tilt > 85.0: self.state.tilt = 85.0
+                    if self.state.tilt < 0.0: self.state.tilt = 0.0
 
-            if self.state.tilt > 85.0: self.state.tilt = 85.0
-            if self.state.tilt < 0.0: self.state.tilt = 0.0
+                if self.joy.buttons[self.home_button] == 1:
+                    self.state.pan = self.default_pan
+                    self.state.tilt = self.default_tilt
+                    self.state.zoom = self.default_zoom
+                else:
+                    self.state.pan = -self.joy.axes[self.axis_pan]*10.0
+                    self.state.tilt = self.joy.axes[self.axis_tilt]*10.0
+                    self.get_logger().info(f"Tilt: {self.state.tilt}")
+                    if self.joy.buttons[self.zoomin_button]:
+                        self.state.zoom = 20.0
+                    elif self.joy.buttons[self.zoomout_button]:
+                        self.state.zoom = -20.0
+    
+            
+            if self.joy.buttons[self.enable_button] != 1 and True: #sppeed control
+                self.state.pan = 0.0
+                self.state.tilt = 0.0
+                self.state.zoom = 0.0
+
             self.pub.publish(self.state)
             self.joy = None
-
     def joy_callback(self, data):
-        self.get_logger().info("got joy!")
         self.joy = data
 
 
