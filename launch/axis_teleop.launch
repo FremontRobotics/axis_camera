@@ -70,14 +70,14 @@
       <remap from="out" to="image_raw_out" /> 
     </node>
 -->
-<!--
+
     <node pkg="axis_camera" exec="axis_teleop" name="axis_teleop" if="$(var enable_ptz_teleop)" namespace="j100_0803/$(var camera1_name)">
       <param name="use_enable_button" value="true" />
       <param name="enable_button" value="1" />
       <param name="scale_pan_deg" value="25" />
       <param name="scale_tilt_deg" value="25" />
 </node>
--->
+
   <!-- To control the PTZ, issue commands like so:
   rostopic pub /axis/cmd axis_camera/Axis '{ brightness: 5000, pan: 100, tilt: 10, zoom: 0, autofocus: True }'
   NOTE: Don't forget to populate the brightness field, or
