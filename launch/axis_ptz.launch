@@ -13,8 +13,8 @@
   <arg name="enable_defog" default="false" />
   <arg name="enable_ir" default="false" />
   <arg name="enable_wiper" default="false" />
-  <arg name="width" default="640" />
-  <arg name="height" default="480" />
+  <arg name="width" default="1920" />
+  <arg name="height" default="1080" />
   <arg name="camera" default="0" />
 
 

@@ -13,7 +13,8 @@ import rclpy
 from rclpy.node import Node
 from axis_camera_interfaces.msg import Axis
 from std_msgs.msg import Bool
-
+from geometry_msgs.msg import Point
+from IPython import embed
 
 class StateThread(threading.Thread):
     '''This class handles the publication of the positional state of the camera
@@ -127,6 +128,13 @@ class AxisPTZ(Node):
         self.declare_parameter('flip', False)
         self.declare_parameter('speed_control', False)
         self.declare_parameter('mirror', False)
+        self.declare_parameter('pan_zoom_fov_factor',    -0.0043)
+        self.declare_parameter('pan_zoom_fov_constant',  40.891)
+        self.declare_parameter('tilt_zoom_fov_factor',   -0.0024)
+        self.declare_parameter('tilt_zoom_fov_constant', 23.044)
+        self.declare_parameter('width', 640)
+        self.declare_parameter('height', 480)
+
 
         self.hostname = self.get_parameter('hostname').get_parameter_value().string_value
         self.flip = self.get_parameter('flip').get_parameter_value().bool_value
@@ -134,7 +142,7 @@ class AxisPTZ(Node):
         self.pub_state = self.create_publisher(Axis, "state", 10)
         self.sub_cmd = self.create_subscription(Axis, "cmd", self.cmd, 1)
         self.sub_mirror = self.create_subscription(Bool, "mirror", self.mirrorCallback, 1)
-
+        self.sub_ptpoint = self.create_subscription(Point, "pantilt_to_point_cmd", self.panTiltToPointCallback, 1)
         self.st = None
 
         if not self.get_parameter('username').get_parameter_value().string_value:
@@ -302,6 +310,47 @@ class AxisPTZ(Node):
         '''Command the camera with speed control or position control commands'''
         self.mirror = msg.data
 
+    def panTiltToPointCallback(self, msg):
+
+        pan_zoom_fov_factor = self.get_parameter('pan_zoom_fov_factor').get_parameter_value().double_value
+        pan_zoom_fov_constant = self.get_parameter('pan_zoom_fov_constant').get_parameter_value().double_value
+        tilt_zoom_fov_factor = self.get_parameter('tilt_zoom_fov_factor').get_parameter_value().double_value
+        tilt_zoom_fov_constant = self.get_parameter('tilt_zoom_fov_constant').get_parameter_value().double_value
+
+        current_zoom = float(self.st.cameraPosition['zoom'])
+        pan_fov = current_zoom * pan_zoom_fov_factor + pan_zoom_fov_constant
+        tilt_fov = current_zoom * tilt_zoom_fov_factor + tilt_zoom_fov_constant
+
+        if pan_fov <= 0:
+            pan_fov = 0.5
+
+        if tilt_fov <= 0:
+            tilt_fov = 0.5
+      
+
+        img_w = self.get_parameter('width').get_parameter_value().integer_value
+        img_h = self.get_parameter('height').get_parameter_value().integer_value
+
+        # we get point from top-left origin.   convert to center-origin.
+        x_from_center = msg.x - (img_w / 2)
+        y_from_center = msg.y - (img_h / 2)
+        
+        x_pct_from_center = x_from_center / img_w
+        y_pct_from_center = y_from_center / img_h
+
+        pan_offset = pan_fov * x_pct_from_center
+        tilt_offset = -(tilt_fov * y_pct_from_center)
+  
+        self.get_logger().info(f"ptpcallback: {msg}  tx:{x_from_center}:{x_pct_from_center}, ty:{y_from_center}:{y_pct_from_center}  pan:{pan_offset}:{pan_fov}  tilt:{tilt_offset}:{tilt_fov}")
+
+        ptz_msg = Axis()
+        ptz_msg.pan =  float(self.st.cameraPosition['pan']) + pan_offset
+        ptz_msg.tilt = float(self.st.cameraPosition['tilt']) + tilt_offset
+        ptz_msg.zoom = float(self.st.cameraPosition['zoom'])
+
+        # check sanity and apply values
+        self.cmd(ptz_msg)
+
     def callback(self, config, level):
         #self.speedControl = config.speed_control
 
@@ -331,7 +380,6 @@ class AxisPTZ(Node):
 def main():
     
     rclpy.init(args=sys.argv)
-
     ptz = AxisPTZ()
 
     try:
