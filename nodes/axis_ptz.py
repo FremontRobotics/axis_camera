@@ -95,7 +95,7 @@ class StateThread(threading.Thread):
                     self.msg.autofocus = (self.cameraPosition['autofocus'] == 'on')
                 if 'autoiris' in self.cameraPosition:
                     self.msg.autoiris = (self.cameraPosition['autoiris'] == 'on')
-                self.axis.pub.publish(self.msg)
+                self.axis.pub_state.publish(self.msg)
         except KeyError as e:
             self.axis.get_logger().warn("Camera not ready for polling its telemetry: " + str(e))
 
@@ -131,8 +131,8 @@ class AxisPTZ(Node):
         self.hostname = self.get_parameter('hostname').get_parameter_value().string_value
         self.flip = self.get_parameter('flip').get_parameter_value().bool_value
 
-        self.pub = self.create_publisher(Axis, "state", 10)
-        self.sub = self.create_subscription(Axis, "cmd", self.cmd, 1)
+        self.pub_state = self.create_publisher(Axis, "state", 10)
+        self.sub_cmd = self.create_subscription(Axis, "cmd", self.cmd, 1)
         self.sub_mirror = self.create_subscription(Bool, "mirror", self.mirrorCallback, 1)
 
         self.st = None
