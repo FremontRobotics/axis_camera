@@ -11,9 +11,8 @@ from tf2_ros import TransformBroadcaster
 
 from axis_camera_interfaces.msg import Axis
 
-base_name = "/kingfisher"
-base_frame = "/kingfisher/base"
-
+#todo don't hardcode this
+state_topic='/j100_0803/axis_ptz/state'
 
 def quaternion_from_euler(ai, aj, ak):
     ai /= 2.0
@@ -46,8 +45,8 @@ class PublishAxisTF(Node):
 
         self.subscription = self.create_subscription(
             Axis,
-            f'state',
-            self.axis_cb,
+            state_topic,
+	    self.axis_cb,
             1)
         
     def axis_cb(self, data):

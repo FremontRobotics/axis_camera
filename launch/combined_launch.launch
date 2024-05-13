@@ -1,0 +1,19 @@
+<launch>
+
+    <!-- Launch localization -->
+    <include file="$(find-pkg-share clearpath_nav2_demos)/launch/localization.launch.py">
+        <arg name="setup_path" value="/etc/clearpath/" />
+        <arg name="map" value="$(env HOME)/Officemapjackal1.yaml" />
+    </include>
+
+    <!-- Launch navigation -->
+    <include file="$(find-pkg-share clearpath_nav2_demos)/launch/nav2.launch.py">
+        <arg name="setup_path" value="/etc/clearpath/" />
+    </include>
+
+    <!-- Launch axis_camera -->
+    <include file="$(find-pkg-share axis_camera)/launch/axis_ptz.launch">
+    </include>
+
+</launch>
+

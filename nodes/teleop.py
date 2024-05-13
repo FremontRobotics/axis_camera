@@ -15,7 +15,7 @@ class Teleop(Node):
         self.enable_button = self.declare_parameter('enable_button', 1).get_parameter_value().integer_value
         self.zoomout_button = self.declare_parameter('zoomout_button', 2).get_parameter_value().integer_value
         self.zoomin_button = self.declare_parameter('zoomin_button', 3).get_parameter_value().integer_value
-        self.home_button = self.declare_parameter('home_button', 10).get_parameter_value().integer_value
+        self.home_button = self.declare_parameter('home_button', 0).get_parameter_value().integer_value
         
         self.axis_pan = self.declare_parameter('axis_pan', 3).get_parameter_value().integer_value
         self.axis_tilt = self.declare_parameter('axis_tilt', 4).get_parameter_value().integer_value

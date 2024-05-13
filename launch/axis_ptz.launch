@@ -31,7 +31,7 @@
       <param name="defog" value="$(var enable_defog)" />
       <param name="ir" value="$(var enable_ir)" />
     </node>
-
+-->
     <node pkg="axis_camera" exec="axis" name="axis_ptz" namespace="j100_0803/$(var camera1_name)">
       <param name="hostname" value="$(var hostname1)" />
       <param name="username" value="$(var username)" />
@@ -45,7 +45,6 @@
       <param name="defog" value="$(var enable_defog)" />
       <param name="ir" value="$(var enable_ir)" />
     </node>
--->
     <node pkg="axis_camera" exec="axis_ptz" name="axis_ptz" if="$(var enable_ptz)" namespace="j100_0803/$(var camera1_name)">
       <param name="hostname" value="$(var hostname1)" />
       <param name="username" value="$(var username)" />

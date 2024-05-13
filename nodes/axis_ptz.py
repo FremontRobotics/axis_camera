@@ -14,7 +14,6 @@ from rclpy.node import Node
 from axis_camera_interfaces.msg import Axis
 from std_msgs.msg import Bool
 from geometry_msgs.msg import Point
-from IPython import embed
 
 class StateThread(threading.Thread):
     '''This class handles the publication of the positional state of the camera
@@ -132,8 +131,8 @@ class AxisPTZ(Node):
         self.declare_parameter('pan_zoom_fov_constant',  40.891)
         self.declare_parameter('tilt_zoom_fov_factor',   -0.0024)
         self.declare_parameter('tilt_zoom_fov_constant', 23.044)
-        self.declare_parameter('width', 640)
-        self.declare_parameter('height', 480)
+        self.declare_parameter('width', 1920)
+        self.declare_parameter('height', 1080)
 
 
         self.hostname = self.get_parameter('hostname').get_parameter_value().string_value
@@ -224,8 +223,6 @@ class AxisPTZ(Node):
         else: # position control:
             if self.msg.zoom>9999.0:
                 self.msg.zoom = 9999.0
-            elif self.msg.zoom<1.0:
-                self.msg.zoom = 1.0
 
     def sanitiseFocus(self):
         '''Focus must be: 1<focus<9999.  continuousfocusmove: -100<rfocus<100'''
@@ -248,8 +245,6 @@ class AxisPTZ(Node):
         else: # position control:
             if self.msg.brightness>9999:
                 self.msg.brightness = 9999
-            elif self.msg.brightness<1:
-                self.msg.brightness = 1
 
     def sanitiseIris(self):
         '''Iris value is read only because autoiris has been set to "on"'''
@@ -260,7 +255,7 @@ class AxisPTZ(Node):
         '''Apply set-points to camera via HTTP'''
 
         self.createCmdString()
-        #self.get_logger().info(f"Sending cmdString: {self.cmdString}")
+        self.get_logger().info(f"Sending cmdString: {self.cmdString}")
         try:
             url = f"http://{self.hostname}/{self.cmdString}"
             resp = requests.get(url, auth=self.http_auth, timeout=self.http_timeout, headers=self.http_headers)
@@ -288,38 +283,30 @@ class AxisPTZ(Node):
             else:
                 self.cmdString += 'autofocus=off&continuousfocusmove=%d&' % \
                                                         (int(self.msg.focus))
-            if self.msg.autoiris:
-                self.cmdString += 'autoiris=on'
-            else:
-                self.cmdString += 'autoiris=off'
         else: # position control:
-            self.cmdString += 'pan=%d&tilt=%d&' % (self.msg.pan, self.msg.tilt)\
-                        + 'zoom=%d&' % (int(self.msg.zoom)) \
-                        + 'brightness=%d&' % (int(self.msg.brightness))
-            if self.msg.autofocus:
+            self.cmdString += 'pan=%d&tilt=%d&' % (self.msg.pan, self.msg.tilt)
+            if (self.msg.zoom >= 0):
+                self.cmdString += 'zoom=%d&' % (int(self.msg.zoom)) 
+            if (self.msg.brightness >= 0):
+                self.cmdString += 'brightness=%d&' % (int(self.msg.brightness))
+            if True: #self.msg.autofocus:
                 self.cmdString += 'autofocus=on&'
             else:
                 self.cmdString += 'autofocus=off&focus=%d&' % \
                                                         (int(self.msg.focus))
-            if self.msg.autoiris:
-                self.cmdString += 'autoiris=on'
-            else:
-                self.cmdString += 'autoiris=off'
 
     def mirrorCallback(self, msg):
         '''Command the camera with speed control or position control commands'''
         self.mirror = msg.data
 
     def panTiltToPointCallback(self, msg):
+        self.get_logger().info(f"{msg}")
 
-        pan_zoom_fov_factor = self.get_parameter('pan_zoom_fov_factor').get_parameter_value().double_value
-        pan_zoom_fov_constant = self.get_parameter('pan_zoom_fov_constant').get_parameter_value().double_value
-        tilt_zoom_fov_factor = self.get_parameter('tilt_zoom_fov_factor').get_parameter_value().double_value
-        tilt_zoom_fov_constant = self.get_parameter('tilt_zoom_fov_constant').get_parameter_value().double_value
 
         current_zoom = float(self.st.cameraPosition['zoom'])
-        pan_fov = current_zoom * pan_zoom_fov_factor + pan_zoom_fov_constant
-        tilt_fov = current_zoom * tilt_zoom_fov_factor + tilt_zoom_fov_constant
+        self.get_logger().info(f"zoom: {current_zoom}")
+        pan_fov = 40.616 * math.exp(-2 * 10**(-4) * current_zoom)
+        tilt_fov = 22.569 * math.exp(-2 * 10**(-4) * current_zoom)
 
         if pan_fov <= 0:
             pan_fov = 0.5
@@ -341,15 +328,18 @@ class AxisPTZ(Node):
         pan_offset = pan_fov * x_pct_from_center
         tilt_offset = -(tilt_fov * y_pct_from_center)
   
-        self.get_logger().info(f"ptpcallback: {msg}  tx:{x_from_center}:{x_pct_from_center}, ty:{y_from_center}:{y_pct_from_center}  pan:{pan_offset}:{pan_fov}  tilt:{tilt_offset}:{tilt_fov}")
+        self.get_logger().info(f"pt to point: {msg}  \ntx:{x_from_center}:{x_pct_from_center}, ty:{y_from_center}:{y_pct_from_center} \npan:{pan_offset}:{pan_fov}  tilt:{tilt_offset}:{tilt_fov}")
 
         ptz_msg = Axis()
         ptz_msg.pan =  float(self.st.cameraPosition['pan']) + pan_offset
         ptz_msg.tilt = float(self.st.cameraPosition['tilt']) + tilt_offset
-        ptz_msg.zoom = float(self.st.cameraPosition['zoom'])
+        ptz_msg.zoom = -1.0
 
         # check sanity and apply values
+        self.get_logger().info(f"{ptz_msg}")
         self.cmd(ptz_msg)
+
+
 
     def callback(self, config, level):
         #self.speedControl = config.speed_control
